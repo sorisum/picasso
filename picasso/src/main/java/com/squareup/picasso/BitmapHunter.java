@@ -202,8 +202,8 @@ abstract class BitmapHunter implements Runnable {
       } else {
         return new ContentProviderBitmapHunter(context, picasso, dispatcher, cache, stats, action);
       }
-    } else if (SCHEME_FILE.equals(scheme) || null == scheme ) {
-      if ( null != scheme && ANDROID_ASSET.equals(uri.getPathSegments().get(0))) {
+    } else if (SCHEME_FILE.equals(scheme)) {
+      if (!uri.getPathSegments().isEmpty() && ANDROID_ASSET.equals(uri.getPathSegments().get(0))) {
         return new AssetBitmapHunter(context, picasso, dispatcher, cache, stats, action);
       }
       return new FileBitmapHunter(context, picasso, dispatcher, cache, stats, action);
@@ -225,7 +225,7 @@ abstract class BitmapHunter implements Runnable {
       final int widthRatio = Math.round((float) width / (float) reqWidth);
       sampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
     }
-    
+
     options.inSampleSize = sampleSize;
     options.inJustDecodeBounds = false;
   }
