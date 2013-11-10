@@ -137,6 +137,18 @@ public class RequestCreator {
    * Resizes the image to the specified dimensions
    * @param targetWidthResId target width
    * @param targetHeightResId target height
+   * @see #resizeDimen(int,int,boolean)
+   * @return
+   */
+  public RequestCreator resizeDimen(int targetWidthResId, int targetHeightResId) {
+    return resizeDimen(targetWidthResId, targetHeightResId, false);
+  }
+
+
+  /**
+   * Resizes the image to the specified dimensions
+   * @param targetWidthResId target width
+   * @param targetHeightResId target height
    * @param onlyIfBigger If true the bitmap will be resized only only if bigger than targetWidth or targetHeight. If false the bitmap will be always resized
    * @return
    */
