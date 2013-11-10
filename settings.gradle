@@ -1,0 +1,3 @@
+rootProject.name = 'picasso'
+include ':picasso-library'
+include ':picasso-sample'

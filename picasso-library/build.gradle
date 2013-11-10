@@ -1,0 +1,89 @@
+
+apply plugin: 'android-library'
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+
+dependencies {
+    compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.squareup.okhttp:okhttp:1.2.1'
+    compile 'com.intellij:annotations:9.0.4'
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "18.1.1"
+
+    defaultConfig {
+        versionCode 1
+        versionName version
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['../picasso/src/main/java']
+            resources.srcDirs = ['../picasso/src/main/java']
+            aidl.srcDirs = ['../picasso/src/main/java']
+            renderscript.srcDirs = ['../picasso/src/main/java']
+        }
+    }
+}
+
+project.ext {
+    outJar = rootProject.name + '-' + version + '.jar'
+}
+
+task clearJar(type: Delete) {
+    println "[clearJar]"
+    delete 'build/libs/' + project.ext.outJar
+}
+
+task makeJar(type: Copy) {
+    println '[makeJar] ' + project.ext.outJar
+    from('build/bundles/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename ('classes.jar', project.ext.outJar)
+}
+
+makeJar.dependsOn(clearJar, build)
+
+
+build << {
+    makeJar.execute()
+}
+
+task createPom << {
+    pom {
+        project {
+            groupId 'com.squareup.picasso'
+            artifactId rootProject.name
+            version version
+
+            inceptionYear '2013'
+            description 'A powerful image downloading and caching library for Android'
+            url 'http://github.com/squareup/picasso'
+            licenses {
+                license {
+                    name 'Apache 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            organization {
+                name 'Square, Inc.'
+                url 'http://squareup.com'
+            }
+        }
+    }.writeTo("pom.xml")
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://$System.env.HOME/.m2/repository/")
+            pom.version = rootProject.version
+            pom.artifactId = rootProject.name
+        }
+    }
+}
