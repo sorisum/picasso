@@ -9,6 +9,9 @@ dependencies {
     compile 'com.intellij:annotations:9.0.4'
 }
 
+group 'it.sephiroth.android'
+version '2.1.2-PORT'
+
 android {
     compileSdkVersion 19
     buildToolsVersion "18.1.1"
@@ -30,60 +33,59 @@ android {
 }
 
 project.ext {
-    outJar = rootProject.name + '-' + version + '.jar'
+    outJar = rootProject.name + '-' + project.version + '.jar'
 }
 
 task clearJar(type: Delete) {
-    println "[clearJar]"
     delete 'build/libs/' + project.ext.outJar
 }
 
 task makeJar(type: Copy) {
-    println '[makeJar] ' + project.ext.outJar
     from('build/bundles/release/')
     into('build/libs/')
     include('classes.jar')
     rename ('classes.jar', project.ext.outJar)
 }
 
-makeJar.dependsOn(clearJar, build)
+makeJar.dependsOn 'clearJar'
+build.dependsOn 'makeJar'
+clean.dependsOn 'clearJar'
 
-
-build << {
-    makeJar.execute()
-}
-
-task createPom << {
-    pom {
-        project {
-            groupId 'com.squareup.picasso'
-            artifactId rootProject.name
-            version version
-
-            inceptionYear '2013'
-            description 'A powerful image downloading and caching library for Android'
-            url 'http://github.com/squareup/picasso'
-            licenses {
-                license {
-                    name 'Apache 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-            organization {
-                name 'Square, Inc.'
-                url 'http://squareup.com'
-            }
-        }
-    }.writeTo("pom.xml")
-}
 
 uploadArchives {
     repositories {
         mavenDeployer {
             repository(url: "file://$System.env.HOME/.m2/repository/")
-            pom.version = rootProject.version
-            pom.artifactId = rootProject.name
+            pom.project {
+                version project.version
+                group project.group
+                artifactId rootProject.name
+                inceptionYear '2013'
+                description 'A powerful image downloading and caching library for Android. Original library at https://github.com/square/picasso'
+                url 'https://github.com/sephiroth74/picasso'
+                licenses {
+                    license {
+                        name 'Apache Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'square'
+                        name 'Square'
+                    }
+                    developer {
+                        id 'sephiroth74'
+                        name 'Alessandro Crugnola'
+                    }
+                }
+                organization {
+                    name 'Square, Inc.'
+                    url 'http://squareup.com'
+                }                
+            }
         }
     }
 }

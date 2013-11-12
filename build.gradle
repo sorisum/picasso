@@ -12,9 +12,6 @@ buildscript {
 apply plugin: 'maven'
 
 allprojects {
-    group = 'com.squareup.picasso'
-    version = '2.1.2-SNAPSHOT'
-
     repositories {
         mavenCentral()
         mavenLocal()
