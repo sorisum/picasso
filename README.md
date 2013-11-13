@@ -6,6 +6,9 @@ A powerful image downloading and caching library for Android
 ![](website/static/sample.png)
 
 For more information please see [the website][1]
+
+-
+
 **About this Fork** Fore more information about changes in this fork see [ALESSANDRO_CRUGNOLA_CHANGELOG.md][3]
 
 
