@@ -9,9 +9,13 @@ buildscript {
     }
 }
 
-apply plugin: 'maven'
 
 allprojects {
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    group 'it.sephiroth.android.library.picasso'
+
     repositories {
         mavenCentral()
         mavenLocal()

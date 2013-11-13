@@ -6,7 +6,7 @@ A powerful image downloading and caching library for Android
 ![](website/static/sample.png)
 
 For more information please see [the website][1]
-
+**About this Fork** Fore more information about changes in this fork see [ALESSANDRO_CRUGNOLA_CHANGELOG.md][3]
 
 
 Download
@@ -44,3 +44,4 @@ License
 
  [1]: http://square.github.io/picasso/
  [2]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.picasso&a=picasso&v=LATEST
+ [3]: https://github.com/sephiroth74/picasso/blob/master/ALESSANDRO_CRUGNOLA_CHANGELOG.md

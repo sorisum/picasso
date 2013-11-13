@@ -1,7 +1,5 @@
 
 apply plugin: 'android-library'
-apply plugin: 'maven-publish'
-apply plugin: 'maven'
 
 dependencies {
     compile 'com.android.support:support-v4:19.0.+'
@@ -9,8 +7,7 @@ dependencies {
     compile 'com.intellij:annotations:9.0.4'
 }
 
-group 'it.sephiroth.android'
-version '2.1.2-PORT'
+version '2.1.2'
 
 android {
     compileSdkVersion 19
@@ -19,6 +16,8 @@ android {
     defaultConfig {
         versionCode 1
         versionName version
+        minSdkVersion 9
+        targetSdkVersion 19
     }
 
     sourceSets {
@@ -46,11 +45,6 @@ task makeJar(type: Copy) {
     include('classes.jar')
     rename ('classes.jar', project.ext.outJar)
 }
-
-makeJar.dependsOn 'clearJar'
-build.dependsOn 'makeJar'
-clean.dependsOn 'clearJar'
-
 
 uploadArchives {
     repositories {
@@ -89,3 +83,82 @@ uploadArchives {
         }
     }
 }
+
+
+def generatePom() {
+    def pom = pom{
+        project {
+            groupId groupId
+            artifactId 'picasso'
+            version version
+            packaging 'aar'
+            description 'A powerful image downloading and caching library for Android. Original library at https://github.com/square/picasso'
+            inceptionYear '2013'
+            url 'https://github.com/sephiroth74/picasso'
+
+            licenses {
+                license {
+                    name 'Apache Version 2.0'
+                   url 'http://www.apache.org/licenses/LICENSE-2.0'
+                    distribution 'repo'
+                }
+            }
+
+            scm {
+                url                 "scm:git:git@github.com:sephiroth74/picasso.git"
+                connection          "scm:git:git@github.com:sephiroth74/picasso.git"
+                developerConnection "scm:git:git@github.com:sephiroth74/picasso.git"
+            }
+
+            organization {
+                name 'Square, Inc.'
+                url 'http://square.com'
+            }
+
+            developers {
+                developer {
+                    id 'square'
+                    name 'Square'
+                    roles {
+                        role 'author'
+                        role 'developer'
+                    }
+                }
+            }
+
+            contributors {
+                contributor {
+                    name 'Alessandro Crugnola'
+                    email 'alessandro.crugnola@gmail.com'
+                    url 'http://blog.sephiroth.it'
+                    roles {
+                        role 'developer'
+                    }
+                }
+            }
+        }
+    }
+}
+
+task writePom {
+    ext.pomXml = file("pom.xml")
+    inputs.file(project.buildFile)
+    outputs.file(pomXml)
+    doLast {
+        generatePom().writeTo(pomXml)
+    }
+}
+
+uploadArchives {
+    doFirst {
+        repositories.mavenDeployer.pom = generatePom()
+    }
+
+    repositories.mavenDeployer {
+        repository(url: "file://$System.env.HOME/.m2/repository/")
+    }
+}
+
+clean.dependsOn 'clearJar'
+build.dependsOn = ['writePom', 'makeJar']
+uploadArchives.dependsOn 'build'
