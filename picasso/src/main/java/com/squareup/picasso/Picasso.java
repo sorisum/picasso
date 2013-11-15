@@ -50,6 +50,9 @@ import com.squareup.picasso.Action.RequestWeakReference;
 public class Picasso {
 	
   public static final String LOG_TAG = "Picasso";
+
+  /** Library Version **/
+  public static final String VERSION = "2.1.2";
   
   /**
    * Custom Uri scheme to be used associated with a custom {@link Generator}
