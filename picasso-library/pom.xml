@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.sephiroth.android.library.picasso</groupId>
-  <artifactId>picasso</artifactId>
+  <artifactId>picasso-library</artifactId>
   <version>2.1.2</version>
   <description>A powerful image downloading and caching library for Android. Original library at https://github.com/square/picasso</description>
   <url>https://github.com/sephiroth74/picasso</url>
