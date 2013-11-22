@@ -1,6 +1,3 @@
-rootProject.name = 'picasso'
-
-gradle.ext.versionModifier = '-SNAPSHOT'
 
 include ':picasso'
 include ':picasso-sample'
