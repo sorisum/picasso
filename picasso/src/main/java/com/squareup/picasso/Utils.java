@@ -210,6 +210,7 @@ final class Utils {
     
     // Target 15% of the available RAM.
     int size = 1024 * 1024 * memoryClass / 7;
+
     // Bound to max size for mem cache.
     return Math.min(size, MAX_MEM_CACHE_SIZE);
   }
