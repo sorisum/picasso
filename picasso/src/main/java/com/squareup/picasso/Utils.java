@@ -15,12 +15,6 @@
  */
 package com.squareup.picasso;
 
-import static android.content.Context.ACTIVITY_SERVICE;
-import static android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP;
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.HONEYCOMB_MR1;
-import static android.provider.Settings.System.AIRPLANE_MODE_ON;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +38,6 @@ import java.io.InputStream;
 import java.util.concurrent.ThreadFactory;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.HONEYCOMB;
 import static android.os.Build.VERSION_CODES.HONEYCOMB_MR1;
@@ -203,12 +196,16 @@ final class Utils {
     return Math.max(Math.min(size, MAX_DISK_CACHE_SIZE), MIN_DISK_CACHE_SIZE);
   }
 
+  @TargetApi(HONEYCOMB)
   static int calculateMemoryCacheSize(Context context) {
     ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
-    boolean largeHeap = (context.getApplicationInfo().flags & FLAG_LARGE_HEAP) != 0;
     int memoryClass = am.getMemoryClass();
-    if (largeHeap && SDK_INT >= HONEYCOMB) {
-      memoryClass = ActivityManagerHoneycomb.getLargeMemoryClass(am);
+
+    if(SDK_INT >= 11) {
+      boolean largeHeap = (context.getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP) != 0;
+      if (largeHeap) {
+        memoryClass = ActivityManagerHoneycomb.getLargeMemoryClass(am);
+      }
     }
     
     // Target 15% of the available RAM.

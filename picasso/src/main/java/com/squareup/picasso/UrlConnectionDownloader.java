@@ -15,6 +15,7 @@
  */
 package com.squareup.picasso;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
 import android.net.http.HttpResponseCache;
@@ -86,6 +87,7 @@ public class UrlConnectionDownloader implements Downloader {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
   private static class ResponseCacheIcs {
     static Object install(Context context) throws IOException {
       File cacheDir = Utils.createDefaultCacheDir(context);

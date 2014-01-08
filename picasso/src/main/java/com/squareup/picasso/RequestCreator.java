@@ -159,6 +159,14 @@ public class RequestCreator {
     return resize(targetWidth, targetHeight, onlyIfBigger);
   }
 
+  /** 
+  * Always Resize the image to the specified size in pixels.
+  * @see #resize(int, int, boolean)
+  */
+  public RequestCreator resize(int targetWidth, int targetHeight) {
+    return resize(targetWidth, targetHeight, false);
+  }
+
   /**
    * Resizes the image to the specified size in pixels
    * @param targetWidthResId target width
@@ -171,6 +179,11 @@ public class RequestCreator {
     return this;
   }
   
+  /**
+   * Use the provided BitmapFactory.Options object when decoding bitmaps.
+   * By default picasso will create a default Options instance everytime a bitmap
+   * is being decoded.
+   */
   public RequestCreator withOptions( BitmapFactory.Options options ) {
 	  data.useOptions(options);
 	  return this;

@@ -78,7 +78,7 @@ class NetworkBitmapHunter extends BitmapHunter {
     if (stream == null) {
       return null;
     }
-BitmapFactory.Options options = data.options;
+    BitmapFactory.Options options = data.options;
     MarkableInputStream markStream = new MarkableInputStream(stream);
     stream = markStream;
 
@@ -90,7 +90,6 @@ BitmapFactory.Options options = data.options;
     // Decode byte array instead
     if (isWebPFile) {
       byte[] bytes = Utils.toByteArray(stream);
-      BitmapFactory.Options options = null;
       if (data.hasSize()) {
         if( null == options ) options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -100,7 +99,6 @@ BitmapFactory.Options options = data.options;
       }
       return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
     } else {
-      BitmapFactory.Options options = null;
       if (data.hasSize()) {
         if( null == options ) options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;

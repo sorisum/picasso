@@ -52,7 +52,7 @@ public class Picasso {
   public static final String LOG_TAG = "Picasso";
 
   /** Library Version **/
-  public static final String VERSION = "2.1.3";
+  public static final String VERSION = "2.1.4";
   
   /**
    * Custom Uri scheme to be used associated with a custom {@link Generator}
