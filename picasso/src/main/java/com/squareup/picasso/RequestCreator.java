@@ -280,7 +280,7 @@ public class RequestCreator {
     }
 
     Request finalData = picasso.transformRequest(data.build());
-    String key = Utils.createKey(finalData);
+    String key = createKey(finalData);
 
     Action<Void> action = new GetAction(picasso, finalData, skipMemoryCache, fadeTime, key);
     return forRequest(picasso.context, picasso, picasso.dispatcher, data.getCache() != null ? data.getCache() : picasso.getCache(), picasso.stats,
@@ -298,7 +298,7 @@ public class RequestCreator {
     
     if (data.hasImage()) {
       Request finalData = picasso.transformRequest(data.build());
-      String key = Utils.createKey(finalData);
+      String key = createKey(finalData);
 
       Action<Void> action = new FetchAction(picasso, finalData, skipMemoryCache, fadeTime, key);
       picasso.enqueueAndSubmit(action, delayMillis);
@@ -414,7 +414,7 @@ public class RequestCreator {
       }
       int measuredWidth = target.getMeasuredWidth();
       int measuredHeight = target.getMeasuredHeight();
-      if (measuredWidth == 0 && measuredHeight == 0) {
+      if (measuredWidth == 0 || measuredHeight == 0) {
         PicassoDrawable.setPlaceholder(target, placeholderResId, placeholderDrawable);
         picasso.defer(target, new DeferredRequestCreator(this, target, callback));
         return;

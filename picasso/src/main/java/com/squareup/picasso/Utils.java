@@ -32,11 +32,24 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Looper;
 import android.os.Process;
 import android.os.StatFs;
 import android.provider.Settings;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.ThreadFactory;
+
+import static android.content.Context.ACTIVITY_SERVICE;
+import static android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.HONEYCOMB;
+import static android.os.Build.VERSION_CODES.HONEYCOMB_MR1;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static android.provider.Settings.System.AIRPLANE_MODE_ON;
 
 final class Utils {
   static final String THREAD_PREFIX = "Picasso-";
@@ -47,8 +60,23 @@ final class Utils {
   private static final int KEY_PADDING = 50; // Determined by exact science.
   private static final int MIN_DISK_CACHE_SIZE = 5 * 1024 * 1024; // 5MB
   private static final int MAX_DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
+
+  /* WebP file header
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |      'R'      |      'I'      |      'F'      |      'F'      |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                           File Size                           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |      'W'      |      'E'      |      'B'      |      'P'      |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  */
+  private static final int WEBP_FILE_HEADER_SIZE = 12;
+  private static final String WEBP_FILE_HEADER_RIFF = "RIFF";
+  private static final String WEBP_FILE_HEADER_WEBP = "WEBP";
+
   private static final int MAX_MEM_CACHE_SIZE = 30 * 1024 * 1024; // 30MB
-  
   /** default drawable fade duration */
   public static final long FADE_DURATION = 200; //ms
 
@@ -179,7 +207,7 @@ final class Utils {
     ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
     boolean largeHeap = (context.getApplicationInfo().flags & FLAG_LARGE_HEAP) != 0;
     int memoryClass = am.getMemoryClass();
-    if (largeHeap && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+    if (largeHeap && SDK_INT >= HONEYCOMB) {
       memoryClass = ActivityManagerHoneycomb.getLargeMemoryClass(am);
     }
     
@@ -198,7 +226,28 @@ final class Utils {
     return context.checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
   }
 
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+  static byte[] toByteArray(InputStream input) throws IOException {
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    byte[] buffer = new byte[1024 * 4];
+    int n = 0;
+    while (-1 != (n = input.read(buffer))) {
+      byteArrayOutputStream.write(buffer, 0, n);
+    }
+    return byteArrayOutputStream.toByteArray();
+  }
+
+  static boolean isWebPFile(InputStream stream) throws IOException {
+    byte[] fileHeaderBytes = new byte[WEBP_FILE_HEADER_SIZE];
+    boolean isWebPFile = false;
+    if (stream.read(fileHeaderBytes, 0, WEBP_FILE_HEADER_SIZE) == WEBP_FILE_HEADER_SIZE) {
+      // If a file's header starts with RIFF and end with WEBP, the file is a WebP file
+      isWebPFile = WEBP_FILE_HEADER_RIFF.equals(new String(fileHeaderBytes, 0, 4, "US-ASCII"))
+          && WEBP_FILE_HEADER_WEBP.equals(new String(fileHeaderBytes, 8, 4, "US-ASCII"));
+    }
+    return isWebPFile;
+  }
+
+  @TargetApi(HONEYCOMB)
   private static class ActivityManagerHoneycomb {
     static int getLargeMemoryClass(ActivityManager activityManager) {
       return activityManager.getLargeMemoryClass();
@@ -222,7 +271,7 @@ final class Utils {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+  @TargetApi(HONEYCOMB_MR1)
   private static class BitmapHoneycombMR1 {
     static int getByteCount(Bitmap bitmap) {
       return bitmap.getByteCount();

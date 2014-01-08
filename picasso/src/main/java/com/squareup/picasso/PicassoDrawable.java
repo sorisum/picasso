@@ -26,6 +26,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
@@ -44,6 +45,9 @@ final public class PicassoDrawable extends Drawable implements Runnable {
   static void setBitmap(ImageView target, Context context, Bitmap bitmap,
       Picasso.LoadedFrom loadedFrom, long fadeTime, boolean debugging) {
     Drawable placeholder = target.getDrawable();
+    if (placeholder instanceof AnimationDrawable) {
+      ((AnimationDrawable) placeholder).stop();
+    }
     PicassoDrawable drawable =
         new PicassoDrawable(context, placeholder, bitmap, loadedFrom, fadeTime, debugging);
     target.setImageDrawable(drawable);
@@ -58,6 +62,9 @@ final public class PicassoDrawable extends Drawable implements Runnable {
       target.setImageResource(placeholderResId);
     } else if( null != placeholderDrawable ){
       target.setImageDrawable(placeholderDrawable);
+    }
+    if (target.getDrawable() instanceof AnimationDrawable) {
+      ((AnimationDrawable) target.getDrawable()).start();
     }
   }
 
@@ -165,34 +172,7 @@ final public class PicassoDrawable extends Drawable implements Runnable {
 
     image.setBounds(bounds);
     if (placeholder != null) {
-      // Center placeholder inside the image bounds
-      setBounds(placeholder);
-    }
-  }
-
-  private void setBounds(Drawable drawable) {
-    Rect bounds = getBounds();
-
-    final int width = bounds.width();
-    final int height = bounds.height();
-    final float ratio = (float) width / height;
-
-    final int drawableWidth = drawable.getIntrinsicWidth();
-    final int drawableHeight = drawable.getIntrinsicHeight();
-    final float drawableRatio = (float) drawableWidth / drawableHeight;
-
-    if (drawableRatio < ratio) {
-      final float scale = (float) height / drawableHeight;
-      final int scaledDrawableWidth = (int) (drawableWidth * scale);
-      final int drawableLeft = bounds.left - (scaledDrawableWidth - width) / 2;
-      final int drawableRight = drawableLeft + scaledDrawableWidth;
-      drawable.setBounds(drawableLeft, bounds.top, drawableRight, bounds.bottom);
-    } else {
-      final float scale = (float) width / drawableWidth;
-      final int scaledDrawableHeight = (int) (drawableHeight * scale);
-      final int drawableTop = bounds.top - (scaledDrawableHeight - height) / 2;
-      final int drawableBottom = drawableTop + scaledDrawableHeight;
-      drawable.setBounds(bounds.left, drawableTop, bounds.right, drawableBottom);
+      placeholder.setBounds(bounds);
     }
   }
 
