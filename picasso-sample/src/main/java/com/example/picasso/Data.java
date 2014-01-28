@@ -1,5 +1,9 @@
 package com.example.picasso;
 
+import android.graphics.Color;
+
+import com.squareup.picasso.Picasso;
+
 final class Data {
   static final String BASE = "http://i.imgur.com/";
   static final String EXT = ".jpg";
@@ -16,6 +20,20 @@ final class Data {
       BASE + "P5ZRSvT" + EXT, BASE + "jbemFzr" + EXT, BASE + "8B7haIK" + EXT,
       BASE + "aSeTYQr" + EXT, BASE + "OKvWoTh" + EXT, BASE + "zD3gT4Z" + EXT,
       BASE + "z77CaIt" + EXT,
+  };
+
+  static final String[] COLORS = {
+		  Picasso.SCHEME_CUSTOM + "://" + Color.BLACK,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.BLUE,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.RED,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.CYAN,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.DKGRAY,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.GRAY,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.GREEN,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.LTGRAY,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.MAGENTA,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.WHITE,
+		  Picasso.SCHEME_CUSTOM + "://" + Color.YELLOW
   };
 
   private Data() {
