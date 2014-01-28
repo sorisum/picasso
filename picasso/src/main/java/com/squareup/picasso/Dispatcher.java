@@ -15,17 +15,6 @@
  */
 package com.squareup.picasso;
 
-import static android.content.Context.CONNECTIVITY_SERVICE;
-import static android.content.Intent.ACTION_AIRPLANE_MODE_CHANGED;
-import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,6 +27,17 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
+import static android.content.Intent.ACTION_AIRPLANE_MODE_CHANGED;
+import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static com.squareup.picasso.BitmapHunter.forRequest;
 
 class Dispatcher {
   private static final int RETRY_DELAY = 500;
@@ -84,7 +84,7 @@ class Dispatcher {
     this.context = context;
     this.service = service;
     this.hunterMap = new LinkedHashMap<String, BitmapHunter>();
-    this.handler = new DispatcherHandler(dispatcherThread.getLooper());
+    this.handler = new DispatcherHandler(dispatcherThread.getLooper(), this);
     this.downloader = downloader;
     this.mainThreadHandler = mainThreadHandler;
     this.cache = cache;
@@ -222,53 +222,60 @@ class Dispatcher {
     }
   }
 
-  private class DispatcherHandler extends Handler {
-    public DispatcherHandler(Looper looper) {
+  private static class DispatcherHandler extends Handler {
+    private final Dispatcher dispatcher;
+
+    public DispatcherHandler(Looper looper, Dispatcher dispatcher) {
       super(looper);
+      this.dispatcher = dispatcher;
     }
 
-    @Override public void handleMessage(Message msg) {
+    @Override public void handleMessage(final Message msg) {
       switch (msg.what) {
         case REQUEST_SUBMIT: {
           Action<?> action = (Action<?>) msg.obj;
-          performSubmit(action);
+          dispatcher.performSubmit(action);
           break;
         }
         case REQUEST_CANCEL: {
           Action<?> action = (Action<?>) msg.obj;
-          performCancel(action);
+          dispatcher.performCancel(action);
           break;
         }
         case HUNTER_COMPLETE: {
           BitmapHunter hunter = (BitmapHunter) msg.obj;
-          performComplete(hunter);
+          dispatcher.performComplete(hunter);
           break;
         }
         case HUNTER_RETRY: {
           BitmapHunter hunter = (BitmapHunter) msg.obj;
-          performRetry(hunter);
+          dispatcher.performRetry(hunter);
           break;
         }
         case HUNTER_DECODE_FAILED: {
           BitmapHunter hunter = (BitmapHunter) msg.obj;
-          performError(hunter);
+          dispatcher.performError(hunter);
           break;
         }
         case HUNTER_DELAY_NEXT_BATCH: {
-          performBatchComplete();
+          dispatcher.performBatchComplete();
           break;
         }
         case NETWORK_STATE_CHANGE: {
           NetworkInfo info = (NetworkInfo) msg.obj;
-          performNetworkStateChange(info);
+          dispatcher.performNetworkStateChange(info);
           break;
         }
         case AIRPLANE_MODE_CHANGE: {
-          performAirplaneModeChange(msg.arg1 == AIRPLANE_MODE_ON);
+          dispatcher.performAirplaneModeChange(msg.arg1 == AIRPLANE_MODE_ON);
           break;
         }
         default:
-          throw new AssertionError("Unknown handler message received: " + msg.what);
+          Picasso.HANDLER.post(new Runnable() {
+            @Override public void run() {
+              throw new AssertionError("Unknown handler message received: " + msg.what);
+            }
+          });
       }
     }
   }
