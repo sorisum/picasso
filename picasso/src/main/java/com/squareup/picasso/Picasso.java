@@ -365,6 +365,15 @@ public class Picasso {
     }
   }
 
+  /**
+   * Toggle the batch mode for delivering results.
+   * Setting to true can cause lag in the UI.
+   * @param useBatch
+  */
+  public void setUseBatch( boolean useBatch ) {
+    this.dispatcher.setUseBatch( useBatch );
+  }
+
   private static class CleanupThread extends Thread {
     private final ReferenceQueue<?> referenceQueue;
     private final Handler handler;

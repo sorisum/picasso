@@ -27,6 +27,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,9 +60,6 @@ class Dispatcher {
 
   private static final String DISPATCHER_THREAD_NAME = "Dispatcher";
   private static final int BATCH_DELAY = 200; // ms
-  
-  // temporary flag
-  private static final boolean USE_BATCH = false;
 
   final DispatcherThread dispatcherThread;
   final Context context;
@@ -76,6 +75,7 @@ class Dispatcher {
 
   NetworkInfo networkInfo;
   boolean airplaneMode;
+  boolean useBatch;
 
   Dispatcher(Context context, ExecutorService service, Handler mainThreadHandler,
       Downloader downloader, Cache cache, Stats stats) {
@@ -93,6 +93,10 @@ class Dispatcher {
     this.airplaneMode = Utils.isAirplaneModeOn(this.context);
     this.receiver = new NetworkBroadcastReceiver(this.context);
     receiver.register();
+  }
+
+  void setUseBatch( boolean value ) {
+    useBatch = value;
   }
 
   void shutdown() {
@@ -210,10 +214,10 @@ class Dispatcher {
     if (hunter.isCancelled()) {
       return;
     }
-    
-    if( USE_BATCH ) {
+
+    if( this.useBatch ) {
       batch.add(hunter);
-    
+
       if (!handler.hasMessages(HUNTER_DELAY_NEXT_BATCH)) {
     	handler.sendEmptyMessageDelayed(HUNTER_DELAY_NEXT_BATCH, BATCH_DELAY);
       }

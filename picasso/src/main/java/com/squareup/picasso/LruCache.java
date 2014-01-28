@@ -109,7 +109,6 @@ public class LruCache implements Cache {
         map.remove(key);
         size -= Utils.getBitmapBytes(value);
         evictionCount++;
-        Log.d( Picasso.LOG_TAG, "[" + id + "] resized to " + map.size() );
       }
     }
   }
