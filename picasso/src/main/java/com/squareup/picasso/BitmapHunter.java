@@ -91,16 +91,15 @@ abstract class BitmapHunter implements Runnable {
       } else {
         dispatcher.dispatchComplete(this);
       }
-    } catch (OutOfMemoryError e) {
-      exception = e;
-      dispatcher.dispatchFailed(this);
     } catch (IOException e) {
       exception = e;
       dispatcher.dispatchRetry(this);
     } catch (OutOfMemoryError e) {
-      StringWriter writer = new StringWriter();
-      stats.createSnapshot().dump(new PrintWriter(writer));
-      exception = new RuntimeException(writer.toString(), e);
+      if( null != stats ) {
+        StringWriter writer = new StringWriter();
+        stats.createSnapshot().dump(new PrintWriter(writer));
+      }
+      exception = e;
       dispatcher.dispatchFailed(this);
     } catch (Exception e) {
       e.printStackTrace();
