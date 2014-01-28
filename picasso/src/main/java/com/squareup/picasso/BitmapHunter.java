@@ -23,6 +23,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -95,6 +97,11 @@ abstract class BitmapHunter implements Runnable {
     } catch (IOException e) {
       exception = e;
       dispatcher.dispatchRetry(this);
+    } catch (OutOfMemoryError e) {
+      StringWriter writer = new StringWriter();
+      stats.createSnapshot().dump(new PrintWriter(writer));
+      exception = new RuntimeException(writer.toString(), e);
+      dispatcher.dispatchFailed(this);
     } catch (Exception e) {
       e.printStackTrace();
       exception = e;
