@@ -28,6 +28,12 @@ android {
             renderscript.srcDirs = ['src/main/java']
         }
     }
+
+    lintOptions {
+        xmlReport false
+        htmlReport true
+        disable 'AllowBackup'
+    }
 }
 
 task displayInfo() {
@@ -134,38 +140,6 @@ uploadArchives {
     }
 }
 
-task updateVersion {
-    def source = new File("src/main/java/com/squareup/picasso/Picasso.java")
-
-    onlyIf { task ->
-        def src = project.file(source)
-        def text = src.text
-        def pattern = /(?ms)^\s*public static final String VERSION = "($project.version)";$/
-        def matcher = ( text =~ pattern )
-
-        if( matcher.size() > 0 ) {
-            return false
-        }
-
-        return true
-    }
-
-    doLast {
-        def src = project.file(source)
-
-        def text = src.text
-        def pattern = /(?ms)^(\s*)(public static final String VERSION = ")([0-9\-a-zA-Z\.]+)(";)$/
-        def matcher = ( text =~ pattern )
-
-        if( matcher.size() > 0 ) {
-            text = matcher.replaceFirst("\$1\$2" + project.version + "\$4")
-            src.setText(text)
-            logger.lifecycle "\t[${source.name}] updated to correct version: ${project.version}"
-        }
-    }
-}
-
-
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.allSource
@@ -182,4 +156,3 @@ artifacts {
 clean.dependsOn(clearJar)
 build.dependsOn(writePom, makeJar)
 uploadArchives.dependsOn(build)
-preBuild.dependsOn(updateVersion)

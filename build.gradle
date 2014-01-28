@@ -14,7 +14,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     group 'it.sephiroth.android.library.picasso'
-    version '2.1.4'
+    version '2.1.5'
 
     repositories {
         mavenCentral()
@@ -23,5 +23,5 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '1.9'
 }
