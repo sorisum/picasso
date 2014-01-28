@@ -15,19 +15,6 @@
  */
 package com.squareup.picasso;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static com.squareup.picasso.Dispatcher.REQUEST_BATCH_COMPLETE;
-import static com.squareup.picasso.Dispatcher.REQUEST_COMPLETE;
-import static com.squareup.picasso.Dispatcher.REQUEST_GCED;
-import static com.squareup.picasso.Utils.THREAD_PREFIX;
-
-import java.io.File;
-import java.lang.ref.ReferenceQueue;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ExecutorService;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -38,8 +25,19 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Log;
 import android.widget.ImageView;
+import java.io.File;
+import java.lang.ref.ReferenceQueue;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
 
-import com.squareup.picasso.Action.RequestWeakReference;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static com.squareup.picasso.Action.RequestWeakReference;
+import static com.squareup.picasso.Dispatcher.REQUEST_BATCH_COMPLETE;
+import static com.squareup.picasso.Dispatcher.REQUEST_COMPLETE;
+import static com.squareup.picasso.Dispatcher.REQUEST_GCED;
+import static com.squareup.picasso.Utils.THREAD_PREFIX;
 
 /**
  * Image downloading, transformation, and caching manager.
@@ -93,7 +91,7 @@ public class Picasso {
 
   static final Handler HANDLER = new Handler(Looper.getMainLooper()) {
     @SuppressWarnings ( "unchecked" )
-	@Override public void handleMessage(Message msg) {
+    @Override public void handleMessage(Message msg) {
       switch (msg.what) {
     	case REQUEST_COMPLETE: {
     		BitmapHunter hunter = (BitmapHunter) msg.obj;
@@ -347,7 +345,6 @@ public class Picasso {
     }
 
     if (listener != null && exception != null) {
-      Log.w( LOG_TAG, exception );
       listener.onImageLoadFailed(this, uri, exception);
     }
   }
