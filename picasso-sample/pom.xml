@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.sephiroth.android.library.picasso</groupId>
   <artifactId>picasso-sample</artifactId>
-  <version>2.1.5</version>
+  <version>2.1.6</version>
   <name>picasso-sample</name>
   <description></description>
   <url>https://github.com/sephiroth74/picasso</url>
