@@ -33,24 +33,25 @@ class ResourceBitmapHunter extends BitmapHunter {
   }
 
   @Override Bitmap decode(Request data) throws IOException {
-	  synchronized ( DECODE_LOCK ) {
-		  return decodeResource(context.getResources(), data);
-	}
+    synchronized ( DECODE_LOCK ) {
+      Resources res = Utils.getResources(context, data);
+      int id = Utils.getResourceId(res, data);
+      return decodeResource(res, id, data);
+    }
   }
 
   @Override Picasso.LoadedFrom getLoadedFrom() {
     return DISK;
   }
 
-  private Bitmap decodeResource(Resources resources, Request data) {
-    int resourceId = data.resourceId;
+  private Bitmap decodeResource(Resources resources, int id, Request data) {
     BitmapFactory.Options bitmapOptions = data.options;
     if (data.hasSize()) {
       if( null == bitmapOptions ) bitmapOptions = new BitmapFactory.Options();
       bitmapOptions.inJustDecodeBounds = true;
-      BitmapFactory.decodeResource(resources, resourceId, bitmapOptions);
+      BitmapFactory.decodeResource(resources, id, bitmapOptions);
       calculateInSampleSize(data.targetWidth, data.targetHeight, bitmapOptions);
     }
-    return BitmapFactory.decodeResource(resources, resourceId, bitmapOptions);
+    return BitmapFactory.decodeResource(resources, id, bitmapOptions);
   }
 }
